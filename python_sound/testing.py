@@ -16,7 +16,7 @@ audio_clips = OrderedDict({
 })
 
 
-def play_clip(file_path, sleep_time=2):
+def play_clip(file_path, sleep_time=1):
     """
     Plays a wav file given its relative or absolute path.
 
@@ -34,19 +34,6 @@ def play_clip(file_path, sleep_time=2):
     # as this is the length of all the clips, in this way the clips can be
     # played one after the other.
     time.sleep(sleep_time)
-
-
-def simulate_events():
-    """
-    Simulates events happening by randomly sampling a time and an integer
-    between 0 and 4 (inclusive) to choose a clip to play.
-    :return:
-    """
-    clips = list(audio_clips.items())
-    for i in range(10):
-        time = np.random.uniform(0, 3)
-        instrument = np.random.randint(0, 5)
-        play_clip(clips[instrument][1], time)
 
 
 def access_ordered_dict(index, dictionary=audio_clips):
@@ -90,6 +77,46 @@ def game():
         play_clip(access_ordered_dict(clip))
 
 
+def game_with_turns(name1, name2):
+    """
+    Simulates the game with turns.
+    :param name1: Name of player 1
+    :type name1: str
+    :param name2: Name of player 2
+    :type name2: str
+    :return: Nothing to return
+    :rtype: None
+    """
+    song = []
+    # Keep asking for keys for 10 repetitions
+    i = 0
+    turn = True  # True corresponds to name1
+    while i < 10:
+        # decide the person's name based on True/False
+        player = name1 if turn else name2
+        key = input("Round #{}. {}'s turn. Press one of 0,1,2,3,4 to generate"
+                    " a sound.\n"
+                    "0: Sax\n"
+                    "1: Drum\n"
+                    "2: Funky Guitar\n"
+                    "3: Bass\n"
+                    "4: Guitar\n"
+                    "Please Press a Key: ".format(i+1 % 2, player))
+        key = int(key)
+        # Keep prompting user until keys are correct
+        while key <0 or key >= 5:
+            key = int(input("Key {} not implemented. Try again: ".format(key)))
+        # After playing the clip, append it to some list
+        play_clip(access_ordered_dict(key))
+        song.append(key)
+        i += 1
+        # finally change the turn
+        turn = ~turn
+    # When game is finished, play the whole song
+    for clip in song:
+        play_clip(access_ordered_dict(clip))
+
+
 if __name__ == "__main__":
     mixer.init()
     """
@@ -97,5 +124,5 @@ if __name__ == "__main__":
     play_clip(audio_clips['sax'])
     """
     # Simulate the game, each key is a facial expression
-    game()
+    game_with_turns('John', 'Laura')
 
