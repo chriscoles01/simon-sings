@@ -77,6 +77,8 @@ while True:
 		bottom_lip = shape[66]
 		left_lip = shape[48]
 		right_lip = shape[54]
+		eyebrow_left_inner = shape[21]
+		eyebrow_right_inner = shape[22]
 
 		# Compute distances of interest
 		# rectangle diagonal
@@ -85,6 +87,8 @@ while True:
 		lips_ver_dist = np.linalg.norm(top_lip - bottom_lip)
 		# left and right lip
 		lips_hor_dist = np.linalg.norm(left_lip - right_lip)
+		# inner edges of eyebrows
+		eyebrow_inner_dist = np.linalg.norm(eyebrow_left_inner - eyebrow_right_inner)
 
 		# print(rect_diag)
 		# print(lips_ver_dist)
@@ -94,12 +98,17 @@ while True:
 		print("Person:", id_)
 
 		# Detect smiling
-		if (lips_hor_dist / rect_diag) > 0.27:
+		if (lips_hor_dist / rect_diag) > 0.3:
 			print("Smiling")
 
 		# Detect opened mouth
 		if (lips_ver_dist / lips_hor_dist) > 0.2:
 			print("Opened mouth")
+
+		# Detect frowning
+		if (eyebrow_inner_dist / rect_diag) < 0.08:
+			print("Frowning")
+		# print(eyebrow_inner_dist / rect_diag)
 
 		print()
 
