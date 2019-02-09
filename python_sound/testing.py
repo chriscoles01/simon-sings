@@ -166,6 +166,16 @@ def blind_game(name1, name2):
                 print("{}, you made a mistake! Cumulative error: {}".format(player, error))
         # increase round number
         round += 1
+        # reset the number of expressions
+        n_expr = 1
+    # finally say who won and who didn't
+    winner = name2 if player == name1 else name2
+    winner_score = score1 if winner == name1 else score2
+    loser = player
+    loser_score = score2 if winner == name1 else score1
+    print("#"*80)
+    print("{}, you've Won!\n{}: {}\n{}:{}".format(winner, winner, winner_score, loser, loser_score))
+
 
 
 
