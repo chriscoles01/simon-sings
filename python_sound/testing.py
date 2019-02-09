@@ -133,9 +133,11 @@ def blind_game(name1, name2):
     while errors1 < 3 and errors2 < 3:
         song = []
         # Number of expression per turn is round+3 (so we start at 3 expr)
+        print("#"*20 + " Round #{} ".format(round) + "#"*20)
+        print("-"*20 + " Recording " + "-"*20)
         while n_expr <= round+3:
             # ask for a key
-            key = int(input("Round #{}. Recording. {}'s turn: Press a number: ".format(round+1, player)))
+            key = int(input("Round #{}. {}'s turn: Press a number: ".format(round+1, player)))
             # play the corresponding clip
             play_clip(access_ordered_dict(key))
             # store clip into a list to record it
@@ -145,21 +147,24 @@ def blind_game(name1, name2):
         # after a song has been created, opponents needs to repeat it
         # change turn
         player = name2 if player == name1 else name1
+        print("-"*20 + " Opponent " + "-"*20)
         for index, clip in enumerate(song):
-            key = int(input("Round #{}. Opponent. {}'s turn: Press a number: ".format(round+1, player)))
-            # play the corresponding clip
-            play_clip(access_ordered_dict(key))
+            key = int(input("Round #{}. {}'s turn: Press a number: ".format(round+1, player)))
             # compare this with the key used by same player
             if key == song[index]:
+                # play the corresponding clip
+                play_clip(access_ordered_dict(key))
                 # clip is correct, increase score of opponent
                 score1 = score1 + 1 if player == name1 else score1
                 score2 = score2 + 1 if player == name2 else score2
-                # when player is correct, reset the errors if he's not reached 3 yet
+                # when player is correct, reset errors if < 3
                 if player == name1 and errors1 < 3:
                     errors1 = 0
                 elif player == name2 and errors2 < 3:
                     errors2 = 0
             else:
+                # Play a "mistake" error
+                play_clip(base_relative_path + "error.wav")
                 # increase counter of errors
                 errors1 = errors1 + 1 if player == name1 else errors1
                 errors2 = errors2 + 1 if player == name2 else errors2
@@ -177,7 +182,7 @@ def blind_game(name1, name2):
     winner_score = score1 if winner == name1 else score2
     loser = player
     loser_score = score2 if winner == name1 else score1
-    print("#"*80)
+    print("#"*20 + " Results " + "#"*20)
     print("{}, you've Won!\n{}: {}\n{}: {}".format(winner, winner, winner_score, loser, loser_score))
 
 
