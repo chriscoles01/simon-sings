@@ -14,7 +14,7 @@ import time
 import dlib
 import cv2
 import numpy as np
- 
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--shape-predictor", required=True,
@@ -22,7 +22,7 @@ ap.add_argument("-p", "--shape-predictor", required=True,
 ap.add_argument("-r", "--picamera", type=int, default=-1,
 	help="whether or not the Raspberry Pi camera should be used")
 args = vars(ap.parse_args())
- 
+
 # initialize dlib's face detector (HOG-based) and then create
 # the facial landmark predictor
 print("[INFO] loading facial landmark predictor...")
@@ -58,7 +58,17 @@ while True:
 		# Draw rectangle around the face
 		rect_left_top = (rect.left(), rect.top())
 		rect_right_bottom = (rect.right(), rect.bottom())
-		cv2.rectangle(frame, rect_left_top, rect_right_bottom, (255,0,0), 2)
+
+		colour = (0,0,0)
+
+		if id_ == 0:
+			colour = (255,0,0)
+		elif id_ == 1:
+			colour = (0,255,0)
+		elif id_ == 2:
+			colour = (0,0,255)
+
+		cv2.rectangle(frame, rect_left_top, rect_right_bottom, colour, 2)
 
 		# print("left, top", rect_left_top, "\t", "right, bottom", rect_right_bottom)
 
@@ -116,15 +126,15 @@ while True:
 		# and draw them on the image
 		for (x, y) in shape:
 			cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
-	  
+
 	# show the frame
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
- 
+
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
 		break
- 
+
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()
