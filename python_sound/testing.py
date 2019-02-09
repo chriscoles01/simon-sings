@@ -164,7 +164,7 @@ def blind_game(name1, name2):
                     errors2 = 0
             else:
                 # Play a "mistake" error
-                play_clip(base_relative_path + "error.wav")
+                play_clip(base_relative_path + "error.mp3")
                 # increase counter of errors
                 errors1 = errors1 + 1 if player == name1 else errors1
                 errors2 = errors2 + 1 if player == name2 else errors2
