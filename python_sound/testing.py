@@ -147,38 +147,38 @@ def blind_game(name1, name2):
         player = name2 if player == name1 else name1
         for index, clip in enumerate(song):
             key = int(input("Round #{}. Opponent. {}'s turn: Press a number: ".format(round+1, player)))
+            # play the corresponding clip
+            play_clip(access_ordered_dict(key))
             # compare this with the key used by same player
             if key == song[index]:
                 # clip is correct, increase score of opponent
-                score1 = score1 + 1 if player == name2 else score1
-                score2 = score2 + 1 if player == name1 else score2
-                # when player is correct, reset the errors
-                if player == name1:
-                    errors2 = 0
-                else:
+                score1 = score1 + 1 if player == name1 else score1
+                score2 = score2 + 1 if player == name2 else score2
+                # when player is correct, reset the errors if he's not reached 3 yet
+                if player == name1 and errors1 < 3:
                     errors1 = 0
+                elif player == name2 and errors2 < 3:
+                    errors2 = 0
             else:
                 # increase counter of errors
-                errors1 = errors1 + 1 if player == name2 else errors1
-                errors2 = errors2 + 1 if player == name1 else errors2
+                errors1 = errors1 + 1 if player == name1 else errors1
+                errors2 = errors2 + 1 if player == name2 else errors2
                 # print an error message
-                error = errors1 if player == name2 else errors2
+                error = errors2 if player == name2 else errors1
                 print("{}, you made a mistake! Cumulative error: {}".format(player, error))
         # increase round number
         round += 1
         # reset the number of expressions
         n_expr = 1
+        # reset the song
+        song = []
     # finally say who won and who didn't
-    winner = name2 if player == name1 else name2
+    winner = name2 if player == name1 else name1
     winner_score = score1 if winner == name1 else score2
     loser = player
     loser_score = score2 if winner == name1 else score1
     print("#"*80)
-    print("{}, you've Won!\n{}: {}\n{}:{}".format(winner, winner, winner_score, loser, loser_score))
-
-
-
-
+    print("{}, you've Won!\n{}: {}\n{}: {}".format(winner, winner, winner_score, loser, loser_score))
 
 
 if __name__ == "__main__":
