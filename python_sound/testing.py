@@ -128,6 +128,7 @@ def play_game_opponent(prevSong, player, error_made, score, round):
         else:
             # Play a "mistake" error
             play_clip(base_relative_path + "error.mp3")
+            time.sleep(2)
 
             error_made = True
             print("{}, you made a mistake!".format(player))
