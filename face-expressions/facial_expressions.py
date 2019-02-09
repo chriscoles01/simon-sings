@@ -131,7 +131,7 @@ class myThread(threading.Thread):
 				self.process_face(id, rect, shape)
 
 				if self.stop:
-					raise Exception("You've just fished to kill the thread. So did I.")
+					raise Exception("You've just wished to kill the thread. So did I.")
 
 
 			# show the frame
