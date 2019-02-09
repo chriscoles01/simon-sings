@@ -16,7 +16,7 @@ audio_clips = OrderedDict({
 })
 
 
-def play_clip(file_path, sleep_time=1):
+def play_clip(file_path, sleep_time=0.05):
     """
     Plays a wav file given its relative or absolute path.
 
@@ -116,74 +116,94 @@ def game_with_turns(name1, name2):
     for clip in song:
         play_clip(access_ordered_dict(clip))
 
+def play_game_opponent(prevSong, player, error_made, score, round):
+    for note in prevSong:
+        opponent_note = int(input("Round #{}. {}'s turn: Press a number: ".format(round, player)))
+
+        if note == opponent_note:
+            # play the corresponding clip
+            play_clip(access_ordered_dict(opponent_note))
+            
+            score += 1
+        else:
+            # Play a "mistake" error
+            play_clip(base_relative_path + "error.mp3")
+
+            error_made = True
+            print("{}, you made a mistake!".format(player))
+            break
+            
+    return error_made, score
+   
+        
+        
+def play_game_composer(song, player, score, round):
+    error_made = False
+    if round > 1:
+        print("-"*20 + " Replay then record new note " + "-"*20)
+        error_made, score = play_game_opponent(song, player, error_made, score, round)
+
+    if not error_made:
+        print("-"*20 + " Recording " + "-"*20)
+        # ask for a key
+        key = int(input("Round #{}. {}'s turn: Press a number: ".format(round, player)))
+        # play the corresponding clip
+        play_clip(access_ordered_dict(key))
+        # store clip into a list to record it
+        song.append(key)
+    return song, error_made, score
 
 def blind_game(name1, name2):
     # Store the round number
-    round = 0
-    # number of initial expressions - 3
-    n_expr = 1
+    round = 1
+
+    
     # store scores of each player
     score1 = 0
     score2 = 0
+    current_score = score1
     # Player name1 starts
     player = name1
-    # Game stops when a player makes 3 or more consecutive errors
-    errors1 = 0
-    errors2 = 0
-    while errors1 < 3 and errors2 < 3:
-        song = []
+    
+    error_made = False
+    song = []
+    while not error_made:
+        
+        
         # Number of expression per turn is round+3 (so we start at 3 expr)
         print("#"*20 + " Round #{} ".format(round) + "#"*20)
-        print("-"*20 + " Recording " + "-"*20)
-        while n_expr <= round+3:
-            # ask for a key
-            key = int(input("Round #{}. {}'s turn: Press a number: ".format(round+1, player)))
-            # play the corresponding clip
-            play_clip(access_ordered_dict(key))
-            # store clip into a list to record it
-            song.append(key)
-            # increase expression number
-            n_expr += 1
+        
+        song, error_made, score = play_game_composer(song, player, current_score, round )
+        if(error_made):
+            break
+        current_score = score
         # after a song has been created, opponents needs to repeat it
+        
         # change turn
-        player = name2 if player == name1 else name1
+        if player == name1:
+            score1 = current_score
+            player = name2 
+            current_score = score2
+        else:
+            score2 = current_score
+            player = name1
+            current_score = score1
+
         print("-"*20 + " Opponent " + "-"*20)
-        for index, clip in enumerate(song):
-            key = int(input("Round #{}. {}'s turn: Press a number: ".format(round+1, player)))
-            # compare this with the key used by same player
-            if key == song[index]:
-                # play the corresponding clip
-                play_clip(access_ordered_dict(key))
-                # clip is correct, increase score of opponent
-                score1 = score1 + 1 if player == name1 else score1
-                score2 = score2 + 1 if player == name2 else score2
-                # when player is correct, reset errors if < 3
-                if player == name1 and errors1 < 3:
-                    errors1 = 0
-                elif player == name2 and errors2 < 3:
-                    errors2 = 0
-            else:
-                # Play a "mistake" error
-                play_clip(base_relative_path + "error.mp3")
-                # increase counter of errors
-                errors1 = errors1 + 1 if player == name1 else errors1
-                errors2 = errors2 + 1 if player == name2 else errors2
-                # print an error message
-                error = errors2 if player == name2 else errors1
-                print("{}, you made a mistake! Cumulative error: {}".format(player, error))
+        
         # increase round number
         round += 1
-        # reset the number of expressions
-        n_expr = 1
-        # reset the song
-        song = []
+
     # finally say who won and who didn't
     winner = name2 if player == name1 else name1
     winner_score = score1 if winner == name1 else score2
     loser = player
     loser_score = score2 if winner == name1 else score1
+    if winner_score == loser_score:
+        winner_score = 1
     print("#"*20 + " Results " + "#"*20)
     print("{}, you've Won!\n{}: {}\n{}: {}".format(winner, winner, winner_score, loser, loser_score))
+
 
 
 if __name__ == "__main__":
