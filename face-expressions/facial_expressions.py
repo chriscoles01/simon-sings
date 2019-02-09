@@ -147,7 +147,7 @@ class myThread(threading.Thread):
 					cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
 
 				if self.stop:
-					raise Exception("You've just fished to kill the thread. So did I.")
+					raise Exception("You've just wished to kill the thread. So did I.")
 
 
 			# show the frame
