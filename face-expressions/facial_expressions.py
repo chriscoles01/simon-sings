@@ -28,12 +28,16 @@ class myThread(threading.Thread):
 		self.threadID = threadID
 		self.name = name
 		self.q = mp.Queue()
+		self.stop = False
 
 
 	def run(self):
 		print("Starting " + self.name)
 		self.run_facial_expression_recognition(self.name)
 		print("Exiting + " + self.name)
+
+	def stop_thread(self):
+		self.stop = True
 
 
 	def run_facial_expression_recognition(self, threadName):
@@ -142,6 +146,10 @@ class myThread(threading.Thread):
 				for (x, y) in shape:
 					cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
 
+				if self.stop:
+					raise Exception("You've just fished to kill the thread. So did I.")
+
+
 			# show the frame
 			# cv2.imshow("Frame", frame)
 			self.q.put(frame)
@@ -165,7 +173,7 @@ if __name__ == '__main__':
 
 		# if the `q` key was pressed, break from the loop
 		if key == ord("q"):
-			# threadName.exit()
+			thread1.stop_thread()
 			break
 
 	print ("Exiting Main Thread")
