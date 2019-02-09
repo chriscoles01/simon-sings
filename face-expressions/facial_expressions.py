@@ -29,6 +29,7 @@ class myThread(threading.Thread):
 		self.threadID = threadID
 		self.name = name
 		self.q = mp.Queue()
+		self.stop = False
 
 
 	def run(self):
@@ -37,6 +38,10 @@ class myThread(threading.Thread):
 		print("Exiting + " + self.name)
 
 	
+	def stop_thread(self):
+		self.stop = True
+
+
 	def draw_face(self, rect, frame, shape):
 		# Draw rectangle around the face
 		rect_left_top = (rect.left(), rect.top())
@@ -125,6 +130,10 @@ class myThread(threading.Thread):
 				self.draw_face(rect, frame, shape)
 				self.process_face(id, rect, shape)
 
+				if self.stop:
+					raise Exception("You've just fished to kill the thread. So did I.")
+
+
 			# show the frame
 			# cv2.imshow("Frame", frame)
 			self.q.put(frame)
@@ -148,7 +157,7 @@ if __name__ == '__main__':
 
 		# if the `q` key was pressed, break from the loop
 		if key == ord("q"):
-			# threadName.exit()
+			thread1.stop_thread()
 			break
 
 	print ("Exiting Main Thread")
