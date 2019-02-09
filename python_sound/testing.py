@@ -117,6 +117,60 @@ def game_with_turns(name1, name2):
         play_clip(access_ordered_dict(clip))
 
 
+def blind_game(name1, name2):
+    # Store the round number
+    round = 0
+    # number of initial expressions - 3
+    n_expr = 1
+    # store scores of each player
+    score1 = 0
+    score2 = 0
+    # Player name1 starts
+    player = name1
+    # Game stops when a player makes 3 or more consecutive errors
+    errors1 = 0
+    errors2 = 0
+    while errors1 < 3 and errors2 < 3:
+        song = []
+        # Number of expression per turn is round+3 (so we start at 3 expr)
+        while n_expr <= round+3:
+            # ask for a key
+            key = int(input("Round #{}. Recording. {}'s turn: Press a number: ".format(round+1, player)))
+            # play the corresponding clip
+            play_clip(access_ordered_dict(key))
+            # store clip into a list to record it
+            song.append(key)
+            # increase expression number
+            n_expr += 1
+        # after a song has been created, opponents needs to repeat it
+        # change turn
+        player = name2 if player == name1 else name1
+        for index, clip in enumerate(song):
+            key = int(input("Round #{}. Opponent. {}'s turn: Press a number: ".format(round+1, player)))
+            # compare this with the key used by same player
+            if key == song[index]:
+                # clip is correct, increase score of opponent
+                score1 = score1 + 1 if player == name2 else score1
+                score2 = score2 + 1 if player == name1 else score2
+                # when player is correct, reset the errors
+                if player == name1:
+                    errors2 = 0
+                else:
+                    errors1 = 0
+            else:
+                # increase counter of errors
+                errors1 = errors1 + 1 if player == name2 else errors1
+                errors2 = errors2 + 1 if player == name1 else errors2
+                # print an error message
+                error = errors1 if player == name2 else errors2
+                print("{}, you made a mistake! Cumulative error: {}".format(player, error))
+        # increase round number
+        round += 1
+
+
+
+
+
 if __name__ == "__main__":
     mixer.init()
     """
@@ -124,5 +178,5 @@ if __name__ == "__main__":
     play_clip(audio_clips['sax'])
     """
     # Simulate the game, each key is a facial expression
-    game_with_turns('John', 'Laura')
+    blind_game('John', 'Laura')
 
