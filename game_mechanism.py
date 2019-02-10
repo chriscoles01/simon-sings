@@ -73,7 +73,6 @@ def play_game_opponent(prevSong, player, error_made, score, thread):
     for note in prevSong:
         expression = thread.get_expression(int(player))
         previous_expression =  convert_expression(expression)
-        print("previous expression ", expression)
         if previous_expression == note:
             previous_expression = -1
         expression = thread.get_expression(int(player))
