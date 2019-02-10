@@ -140,10 +140,14 @@ class FacialExpressionDetector(threading.Thread):
 				self.process_face(id_, rect, shape)
 
 				if self.stop:
-					raise Exception("You've just wished to kill me. So did a suicide.")
+					raise Exception("You've just wished to kill me. So I did a suicide.")
 
 			# show the frame
 			# cv2.imshow("Frame", frame)
+			if self.q.full():
+				print("Full queue")
+				self.q.qet()
+
 			self.q.put(frame)
 			time.sleep(0.1)
 		
@@ -170,9 +174,9 @@ if __name__ == '__main__':
 			thread1.stop_thread()
 			break
 
-		counter += 1
-		if counter % 1 == 0:
-			print(thread1.get_expression(0))
+		# counter += 1
+		# if counter % 1 == 0:
+		# 	print(thread1.get_expression(0))
 
 
 	print ("Exiting Main Thread")
