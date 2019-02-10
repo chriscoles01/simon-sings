@@ -3,6 +3,8 @@
 # import the necessary packages
 from imutils.video import VideoStream
 from imutils import face_utils
+import redis
+from redis import Redis
 import datetime
 import argparse
 import imutils
