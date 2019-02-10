@@ -32,8 +32,6 @@ class FacialExpressionDetector(threading.Thread):
 			if expression is not None:
 				return expression
 
-
-
 	def run(self):
 		print("Starting " + self.name)
 		self.run_facial_expression_recognition(self.name)
@@ -156,6 +154,34 @@ class FacialExpressionDetector(threading.Thread):
 		cv2.destroyAllWindows()
 		vs.stop()
 
+
+class VideoCamera(object):
+	def __init__(self):
+		# Using OpenCV to capture from device 0. If you have trouble capturing
+		# from a webcam, comment the line below out and use a video file
+		# instead.
+		self.video = cv2.VideoCapture(0)
+		# If you decide to use video.mp4, you must have this file in the folder
+		# as the main.py.
+		# self.video = cv2.VideoCapture('video.mp4')
+
+		# Create new threads
+		self.thread1 = FacialExpressionDetector(1, "Facial-Thread")
+		# Start new Threads
+		self.thread1.start()
+
+	def __del__(self):
+		self.video.release()
+
+	def get_frame(self):
+		# success, image = self.video.read()
+		image = self.thread1.q.get()
+		# We are using Motion JPEG, but OpenCV defaults to capture raw images,
+		# so we must encode it into JPEG in order to correctly display the
+		# video stream.
+		ret, jpeg = cv2.imencode('.jpg', image)
+		# print(image.shape)
+		return jpeg.tobytes()
 
 if __name__ == '__main__':
 	# Create new threads
