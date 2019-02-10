@@ -135,6 +135,12 @@ class FacialExpressionDetector(threading.Thread):
 			for id_, rect in enumerate(rects_lst):
 				shape = self.predictor(gray_frame, rect)
 				shape = face_utils.shape_to_np(shape)
+
+				if rect.left() < 350:
+					id_ = 0
+				else:
+					id_ = 1
+
 				self.draw_face(id_, rect, frame, shape)
 				self.process_face(id_, rect, shape)
 
