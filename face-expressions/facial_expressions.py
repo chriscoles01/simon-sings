@@ -1,8 +1,4 @@
-# tutorial from https://www.pyimagesearch.com/2017/04/17/real-time-facial-landmark-detection-opencv-python-dlib/
-
-# USAGE - you NEED a shape predictor with this. hopefully it's included with the file.
-# python video_facial_landmarks.py --shape-predictor shape_predictor_68_face_landmarks.dat
-# python video_facial_landmarks.py --shape-predictor shape_predictor_68_face_landmarks.dat --picamera 1
+# adapted from https://www.pyimagesearch.com/2017/04/17/real-time-facial-landmark-detection-opencv-python-dlib/
 
 # import the necessary packages
 from imutils.video import VideoStream
@@ -19,10 +15,7 @@ import threading
 import time
 import multiprocessing as mp
 
-
-
-class myThread(threading.Thread):
-
+class FacialExpressionDetector(threading.Thread):
 
 	def __init__(self, threadID, name):
 		threading.Thread.__init__(self)
@@ -112,7 +105,7 @@ class myThread(threading.Thread):
 		# loop over the frames from the video stream
 		while True:
 			# grab the frame from the threaded video stream, resize it to
-			# have a maximum width of 400 pixels, and convert it to
+			# have a maximum width of 800 pixels, and convert it to
 			# grayscale
 			frame = vs.read()
 			frame = imutils.resize(frame, width=800)
@@ -133,12 +126,9 @@ class myThread(threading.Thread):
 				if self.stop:
 					raise Exception("You've just fished to kill the thread. So did I.")
 
-
 			# show the frame
 			# cv2.imshow("Frame", frame)
 			self.q.put(frame)
-
-			time.sleep(0.1)
 		
 		# do a bit of cleanup
 		cv2.destroyAllWindows()
