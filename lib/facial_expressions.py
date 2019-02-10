@@ -32,8 +32,6 @@ class FacialExpressionDetector(threading.Thread):
 			if expression is not None:
 				return expression
 
-
-
 	def run(self):
 		print("Starting " + self.name)
 		self.run_facial_expression_recognition(self.name)
@@ -83,28 +81,28 @@ class FacialExpressionDetector(threading.Thread):
 		# inner edges of eyebrows
 		eyebrow_inner_dist = np.linalg.norm(eyebrow_left_inner - eyebrow_right_inner)
 
-		# print("Person:", id_)
+		print("Person:", id_)
 
 		# Detect smiling
 		if (lips_hor_dist / rect_diag) > 0.3:
 			self.expressions[id_] = 'smiling'
-			# print("Smiling")
+			print("Smiling")
 
 		# Detect opened mouth
 		elif (lips_ver_dist / lips_hor_dist) > 0.2:
 			self.expressions[id_] = 'opened-mouth'
-			# print("Opened mouth")
+			print("Opened mouth")
 
 		# Detect frowning
 		elif (eyebrow_inner_dist / rect_diag) < 0.09:
 			self.expressions[id_] = 'frowning'
-			# print("Frowning")
+			print("Frowning")
 		
 		# Otherwise None
 		else:
 			self.expressions[id_] = None
 
-		# print()
+		print()
 
 
 	def run_facial_expression_recognition(self, threadName):
@@ -124,6 +122,7 @@ class FacialExpressionDetector(threading.Thread):
 			# have a maximum width of 800 pixels, and convert it to
 			# grayscale
 			frame = vs.read()
+			# print(frame)
 			frame = imutils.resize(frame, width=800)
 			gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -155,6 +154,34 @@ class FacialExpressionDetector(threading.Thread):
 		cv2.destroyAllWindows()
 		vs.stop()
 
+
+class VideoCamera(object):
+	def __init__(self):
+		# Using OpenCV to capture from device 0. If you have trouble capturing
+		# from a webcam, comment the line below out and use a video file
+		# instead.
+		self.video = cv2.VideoCapture(0)
+		# If you decide to use video.mp4, you must have this file in the folder
+		# as the main.py.
+		# self.video = cv2.VideoCapture('video.mp4')
+
+		# Create new threads
+		self.thread1 = FacialExpressionDetector(1, "Facial-Thread")
+		# Start new Threads
+		self.thread1.start()
+
+	def __del__(self):
+		self.video.release()
+
+	def get_frame(self):
+		# success, image = self.video.read()
+		image = self.thread1.q.get()
+		# We are using Motion JPEG, but OpenCV defaults to capture raw images,
+		# so we must encode it into JPEG in order to correctly display the
+		# video stream.
+		ret, jpeg = cv2.imencode('.jpg', image)
+		# print(image.shape)
+		return jpeg.tobytes()
 
 if __name__ == '__main__':
 	# Create new threads
