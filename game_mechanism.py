@@ -3,9 +3,10 @@ from pygame import mixer
 import numpy as np
 from collections import OrderedDict
 import time
+from lib.facial_expressions import FacialExpressionDetector
 
 # Set up a base relative path for all audio clips, use dict to be DRY
-base_relative_path = "../sound_clips/"
+base_relative_path = "sound_clips/"
 
 audio_clips = OrderedDict({
     'sax': base_relative_path + 'alto_sax.wav',
@@ -16,7 +17,7 @@ audio_clips = OrderedDict({
 })
 
 
-def play_clip(file_path, sleep_time=0.05):
+def play_clip(file_path, sleep_time=2):
     """
     Plays a wav file given its relative or absolute path.
 
@@ -116,9 +117,9 @@ def game_with_turns(name1, name2):
     for clip in song:
         play_clip(access_ordered_dict(clip))
 
-def play_game_opponent(prevSong, player, error_made, score, round):
+def play_game_opponent(prevSong, player, error_made, score, round, thread):
     for note in prevSong:
-        opponent_note = int(input("Round #{}. {}'s turn: Press a number: ".format(round, player)))
+        opponent_note = convert_expression(thread.get_expression(int(player)))
 
         if note == opponent_note:
             # play the corresponding clip
@@ -138,23 +139,33 @@ def play_game_opponent(prevSong, player, error_made, score, round):
    
         
         
-def play_game_composer(song, player, score, round):
+def play_game_composer(song, player, score, round, thread):
     error_made = False
     if round > 1:
         print("-"*20 + " Replay then record new note " + "-"*20)
-        error_made, score = play_game_opponent(song, player, error_made, score, round)
+        error_made, score = play_game_opponent(song, player, error_made, score, round, thread)
 
     if not error_made:
         print("-"*20 + " Recording " + "-"*20)
         # ask for a key
-        key = int(input("Round #{}. {}'s turn: Press a number: ".format(round, player)))
+        key = convert_expression(thread.get_expression(int(player)))
         # play the corresponding clip
         play_clip(access_ordered_dict(key))
         # store clip into a list to record it
         song.append(key)
     return song, error_made, score
 
-def blind_game(name1, name2):
+def convert_expression(expression):
+    
+    if expression == "smiling": 
+        return 0
+    elif expression == "opened-mouth":
+        return 1
+    elif expression == "frowning":
+        return 2
+
+
+def blind_game(name1, name2, thread):
     # Store the round number
     round = 1
 
@@ -174,7 +185,7 @@ def blind_game(name1, name2):
         # Number of expression per turn is round+3 (so we start at 3 expr)
         print("#"*20 + " Round #{} ".format(round) + "#"*20)
         
-        song, error_made, score = play_game_composer(song, player, current_score, round )
+        song, error_made, score = play_game_composer(song, player, current_score, round, thread )
         if(error_made):
             break
         current_score = score
@@ -206,13 +217,17 @@ def blind_game(name1, name2):
     print("{}, you've Won!\n{}: {}\n{}: {}".format(winner, winner, winner_score, loser, loser_score))
 
 
-
 if __name__ == "__main__":
     mixer.init()
     """
     # Play a single clip
     play_clip(audio_clips['sax'])
     """
-    # Simulate the game, each key is a facial expression
-    blind_game('John', 'Laura')
+    
+    # Create new threads
+    thread1 = FacialExpressionDetector(1, "Facial-Thread")
+	# Start new Threads
+    thread1.start()
 
+    # Simulate the game, each key is a facial expression
+    blind_game('0', '1', thread1)
