@@ -145,6 +145,7 @@ class FacialExpressionDetector(threading.Thread):
 			# show the frame
 			# cv2.imshow("Frame", frame)
 			self.q.put(frame)
+			time.sleep(0.1)
 		
 		# do a bit of cleanup
 		cv2.destroyAllWindows()
@@ -153,7 +154,7 @@ class FacialExpressionDetector(threading.Thread):
 
 if __name__ == '__main__':
 	# Create new threads
-	thread1 = myThread(1, "Facial-Thread")
+	thread1 = FacialExpressionDetector(1, "Facial-Thread")
 	# Start new Threads
 	thread1.start()
 
@@ -169,9 +170,9 @@ if __name__ == '__main__':
 			thread1.stop_thread()
 			break
 
-		counter += 1
-		if counter % 1 == 0:
-			print(thread1.get_expression(0))
+		# counter += 1
+		# if counter % 1 == 0:
+		# 	print(thread1.get_expression(0))
 
 
 	print ("Exiting Main Thread")
