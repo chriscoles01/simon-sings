@@ -170,9 +170,9 @@ if __name__ == '__main__':
 			thread1.stop_thread()
 			break
 
-		# counter += 1
-		# if counter % 1 == 0:
-		# 	print(thread1.get_expression(0))
+		counter += 1
+		if counter % 1 == 0:
+			print(thread1.get_expression(0))
 
 
 	print ("Exiting Main Thread")
