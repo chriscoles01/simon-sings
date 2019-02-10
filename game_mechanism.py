@@ -3,6 +3,7 @@ from pygame import mixer
 import numpy as np
 from collections import OrderedDict
 import time
+import zmq
 from lib.facial_expressions import FacialExpressionDetector
 
 # Set up a base relative path for all audio clips, use dict to be DRY
@@ -16,6 +17,9 @@ audio_clips = OrderedDict({
     'guitar': base_relative_path + 'guitar_loops.wav'
 })
 
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:5555")
 
 def play_clip(file_path, sleep_time=2):
     """
@@ -166,6 +170,9 @@ def blind_game(name1, name2, thread):
     
     error_made = False
     song = []
+	
+	first_req = socket.recv()
+	
     while not error_made:
 
         # Number of expression per turn is round+3 (so we start at 3 expr)

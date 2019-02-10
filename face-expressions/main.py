@@ -15,8 +15,14 @@
 # 3. Navigate the browser to the local webpage.
 from flask import Flask, render_template, Response
 from facial_expressions import VideoCamera
+import zmq
 
 app = Flask(__name__)
+context = zmq.Context()
+video_camera = VideoCamera()
+
+socket = context.socket(zmq.REQ)
+socket.connect("tcp://localhost:5555")
 
 @app.route('/')
 def index():
@@ -34,4 +40,4 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(port=4996,host='127.0.0.1', debug=True)
