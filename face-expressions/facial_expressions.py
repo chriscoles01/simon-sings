@@ -94,7 +94,7 @@ class FacialExpressionDetector(threading.Thread):
 			print("Opened mouth")
 
 		# Detect frowning
-		elif (eyebrow_inner_dist / rect_diag) < 0.09:
+		elif (eyebrow_inner_dist / rect_diag) < 0.08:
 			self.expressions[id_] = 'frowning'
 			print("Frowning")
 		

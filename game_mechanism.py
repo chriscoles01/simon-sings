@@ -71,8 +71,18 @@ def play_game_opponent(prevSong, player, error_made, score, thread):
     :rtype: tuple
     """
     for note in prevSong:
-        opponent_note = convert_expression(thread.get_expression(int(player)))
+        expression = thread.get_expression(int(player))
+        previous_expression =  convert_expression(expression)
+        print("previous expression ", expression)
+        if previous_expression == note:
+            previous_expression = -1
+        expression = thread.get_expression(int(player))
+        opponent_note = convert_expression(expression)
 
+        while previous_expression == opponent_note:
+            expression = thread.get_expression(int(player))
+            opponent_note = convert_expression(expression)
+        print(expression)
         if note == opponent_note:
             # play the corresponding clip
             play_clip(access_ordered_dict(opponent_note))
@@ -118,7 +128,12 @@ def play_game_composer(song, player, score, round, thread):
     if not error_made:
         print("-"*20 + " Recording " + "-"*20)
         # ask for a key
-        key = convert_expression(thread.get_expression(int(player)))
+        print("wait")
+        time.sleep(1)
+        print("record")
+        expression = thread.get_expression(int(player))
+        key = convert_expression(expression)
+        print(expression)
         # play the corresponding clip
         play_clip(access_ordered_dict(key))
         # store clip into a list to record it
@@ -194,9 +209,9 @@ def blind_game(name1, name2, thread):
         round += 1
 
     # finally say who won and who didn't
-    winner = name2 if player == name1 else name1
+    winner = "left player" if player == name1 else "right player"
     winner_score = score1 if winner == name1 else score2
-    loser = player
+    loser = "right player" if player == name1 else "left player"
     loser_score = score2 if winner == name1 else score1
     if winner_score == loser_score:
         winner_score = 1

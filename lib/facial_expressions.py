@@ -110,7 +110,7 @@ class FacialExpressionDetector(threading.Thread):
 		# the facial landmark predictor
 		print("[INFO] loading facial landmark predictor...")
 		self.detector = dlib.get_frontal_face_detector()
-		self.predictor = dlib.shape_predictor('lib/shape_predictor_68_face_landmarks.dat')
+		self.predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 		# initialize the video stream and start the camera
 		print("[INFO] camera starting up...")
