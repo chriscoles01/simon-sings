@@ -81,28 +81,28 @@ class FacialExpressionDetector(threading.Thread):
 		# inner edges of eyebrows
 		eyebrow_inner_dist = np.linalg.norm(eyebrow_left_inner - eyebrow_right_inner)
 
-		print("Person:", id_)
+		# print("Person:", id_)
 
 		# Detect smiling
 		if (lips_hor_dist / rect_diag) > 0.3:
 			self.expressions[id_] = 'smiling'
-			print("Smiling")
+			# print("Smiling")
 
 		# Detect opened mouth
 		elif (lips_ver_dist / lips_hor_dist) > 0.2:
 			self.expressions[id_] = 'opened-mouth'
-			print("Opened mouth")
+			# print("Opened mouth")
 
 		# Detect frowning
 		elif (eyebrow_inner_dist / rect_diag) < 0.09:
 			self.expressions[id_] = 'frowning'
-			print("Frowning")
+			# print("Frowning")
 		
 		# Otherwise None
 		else:
 			self.expressions[id_] = None
 
-		print()
+		# print()
 
 
 	def run_facial_expression_recognition(self, threadName):
