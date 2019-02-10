@@ -144,7 +144,31 @@ def convert_expression(expression):
         return 2
 
 
+
+from flask import Flask, render_template, Response
+from lib.facial_expressions import VideoCamera
+
+vc = VideoCamera()
+
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
+
+from multiprocessing.connection import Client
+
+address = ('127.0.0.1', 6000)
+conn = Client(address)
+
+
+
+
+
 def blind_game(name1, name2, thread):
+    print("[INFO] Started game")
     """
     Plays the actual game.
 
@@ -167,6 +191,8 @@ def blind_game(name1, name2, thread):
     error_made = False
     song = []
     while not error_made:
+
+        conn.send(gen(vc))
 
         # Number of expression per turn is round+3 (so we start at 3 expr)
         print("#"*20 + " Round #{} ".format(round) + "#"*20)
@@ -192,6 +218,7 @@ def blind_game(name1, name2, thread):
         
         # increase round number
         round += 1
+    conn.close()
 
     # finally say who won and who didn't
     winner = name2 if player == name1 else name1
@@ -206,11 +233,23 @@ def blind_game(name1, name2, thread):
                   lname=loser, lscore=loser_score))
 
 
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     mixer.init()
+
+
     # Create new threads
-    thread1 = FacialExpressionDetector(1, "Facial-Thread")
-    # Start new Threads
-    thread1.start()
+    # thread1 = FacialExpressionDetector(1, "Facial-Thread")
+    # # Start new Threads
+    # thread1.start()
     # Simulate the game, each key is a facial expression
-    blind_game('0', '1', thread1)
+
+    blind_game('0', '1', vc.thread1) 
