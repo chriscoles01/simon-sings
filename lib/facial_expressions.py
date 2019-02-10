@@ -117,6 +117,13 @@ class FacialExpressionDetector(threading.Thread):
 		vs = VideoStream(0).start()
 
 		# loop over the frames from the video stream
+		from multiprocessing.connection import Listener
+
+		address = ('localhost', 6000)     # family is deduced to be 'AF_INET'
+		listener = Listener(address, authkey=b'secret password')
+
+		conn = listener.accept()
+		print('connection accepted from', listener.last_accepted)
 		while True:
 			# grab the frame from the threaded video stream, resize it to
 			# have a maximum width of 800 pixels, and convert it to
@@ -148,11 +155,26 @@ class FacialExpressionDetector(threading.Thread):
 				self.q.qet()
 
 			self.q.put(frame)
+
+
+
+			
+
+			# conn.send([2.25, None, 'junk', float])
+			ret, jpeg = cv2.imencode('.jpg', frame)
+
+			conn.send(jpeg.tobytes())
+
+
+
+
 			time.sleep(0.1)
 		
 		# do a bit of cleanup
 		cv2.destroyAllWindows()
 		vs.stop()
+		# conn.close()
+		# listener.close()
 
 
 class VideoCamera(object):

@@ -17,6 +17,10 @@ audio_clips = OrderedDict({
 })
 
 
+from lib.facial_expressions import VideoCamera
+vc = VideoCamera()
+
+
 def play_clip(file_path, sleep_time=2):
     """
     Plays a wav file given its relative or absolute path.
@@ -166,6 +170,26 @@ def blind_game(name1, name2, thread):
     
     error_made = False
     song = []
+
+
+
+    # from multiprocessing.connection import Listener
+
+    # address = ('localhost', 6000)     # family is deduced to be 'AF_INET'
+    # listener = Listener(address, authkey=b'secret password')
+
+    # conn = listener.accept()
+    # print('connection accepted from', listener.last_accepted)
+
+    # conn.send([2.25, None, 'junk', float])
+
+
+
+
+
+
+
+
     while not error_made:
 
         # Number of expression per turn is round+3 (so we start at 3 expr)
@@ -193,6 +217,8 @@ def blind_game(name1, name2, thread):
         # increase round number
         round += 1
 
+    # conn.close()
+    # listener.close()
     # finally say who won and who didn't
     winner = name2 if player == name1 else name1
     winner_score = score1 if winner == name1 else score2
@@ -208,9 +234,5 @@ def blind_game(name1, name2, thread):
 
 if __name__ == "__main__":
     mixer.init()
-    # Create new threads
-    thread1 = FacialExpressionDetector(1, "Facial-Thread")
-    # Start new Threads
-    thread1.start()
     # Simulate the game, each key is a facial expression
-    blind_game('0', '1', thread1)
+    blind_game('0', '1', vc.thread1)

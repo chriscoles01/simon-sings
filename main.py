@@ -18,19 +18,41 @@ from lib.facial_expressions import VideoCamera
 
 app = Flask(__name__)
 
+from multiprocessing.connection import Client
+
+address = ('localhost', 6000)
+conn = Client(address, authkey=b'secret password')
+
+
+# frame = None
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
-def gen(camera):
+frame = None
+
+def gen():
+    # global conn
+    # global frame
     while True:
-        frame = camera.get_frame()
+        print("Started gen()")
+        # frame = conn.recv()
+        print(frame)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
+import time
+
+while True:
+    print("Started gen()")
+    frame = conn.recv()
+    # time.sleep(0.2)
+    print(frame)
+
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen(VideoCamera()),
+    return Response(gen(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
