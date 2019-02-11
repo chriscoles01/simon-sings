@@ -1,3 +1,5 @@
+## Simon Sings - a game for the visually impaired
+
 A python game intended at those who are visually impaired. The game works like simon says, where a facial expression maps to a sound. 2 players take turns to repeat the previous pattern of facial expressions, before adding a new expression. The game ends when a player makes a mistake. To understand what expression another player has made, each of the three possible expressions: frowning, smiling, and opening your mouth, are mapped to a sound. 
 
 In order to run the game run python game-mechanism.py
